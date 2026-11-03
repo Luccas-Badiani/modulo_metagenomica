@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Template reutilizável para aulas práticas de bioinformática.">
+  <title>Metagenômica | Aula prática</title>
+
+  <style>
+   :root {
+  --primary: #174D38;
+  --primary-dark: #103A2A;
+  --accent: #47866A;
+
+  --page: #F3F6F3;
+  --surface: #FFFFFF;
+
+  --text: #26382F;
+  --muted: #66776D;
+  --border: #DCE5DE;
+
+  --code-bg: #192820;
+  --code-text: #E7F0E9;
+
+  --info-bg: #EAF2EC;
+  --warning-bg: #FFF5DF;
+  --success-bg: #E4F1E6;
+  }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.7;
+    }
+
+    a { color: var(--accent); }
+
+    .topbar {
+      background: var(--primary-dark);
+      color: white;
+      padding: 13px 24px;
+      font-size: .92rem;
+      letter-spacing: .02em;
+    }
+
+    .topbar-inner {
+      max-width: 1400px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .layout {
+      max-width: 1400px;
+      margin: 28px auto;
+      padding: 0 22px;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 26px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      box-shadow: var(--shadow);
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+    }
+
+    .sidebar a.subsection{
+      padding-left: 24px;
+      font-size: 0.85rem;
+      color: var(--text)
+    }
+
+    .sidebar h2 {
+      margin: 0 0 12px;
+      color: var(--primary);
+      font-size: .95rem;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+
+    .sidebar a {
+      display: block;
+      color: var(--text);
+      text-decoration: none;
+      padding: 8px 10px;
+      border-radius: 7px;
+      font-size: .92rem;
+      line-height: 1.4;
+    }
+
+    .sidebar a:hover, .sidebar a:focus {
+      background: var(--info-bg);
+      color: var(--primary-dark);
+      outline: none;
+    }
+
+    .content { min-width: 0; }
+
+    .hero {
+      background: linear-gradient(130deg, var(--primary-dark), var(--primary), var(--accent));
+      color: white;
+      padding: 38px 42px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: .78rem;
+      opacity: .85;
+      font-weight: bold;
+    }
+
+    .hero h1 {
+      margin: 9px 0 12px;
+      font-size: clamp(1.8rem, 4vw, 2.7rem);
+      line-height: 1.15;
+    }
+
+    .hero p { margin: 0; max-width: 760px; opacity: .92; }
+
+    .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 22px;
+      font-size: .9rem;
+      opacity: .95;
+    }
+
+    .meta span { display: inline-flex; gap: 7px; align-items: center; }
+
+    .panel, .lesson-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 26px 30px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2, .lesson-section h2 {
+      color: var(--primary);
+      margin: 0 0 14px;
+      line-height: 1.3;
+    }
+
+    .lesson-section h2 {
+      font-size: 1.35rem;
+      padding-bottom: 11px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .lesson-section h3 {
+      color: var(--primary-dark);
+      margin: 24px 0 8px;
+      font-size: 1.08rem;
+    }
+
+    p { margin: 0 0 14px; }
+    ul, ol { padding-left: 24px; }
+    li { margin-bottom: 7px; }
+
+    .tag {
+      display: inline-block;
+      background: #e5f0f3;
+      color: var(--primary-dark);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: .78rem;
+      font-weight: bold;
+      margin: 0 5px 7px 0;
+    }
+
+    .callout {
+      padding: 15px 18px;
+      border-left: 4px solid var(--accent);
+      background: var(--info-bg);
+      border-radius: 7px;
+      margin: 18px 0;
+    }
+
+    .callout.warning {
+      background: var(--warning-bg);
+      border-left-color: #d59a28;
+    }
+
+    .callout.success {
+      background: var(--success-bg);
+      border-left-color: #398052;
+    }
+
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    pre {
+      overflow-x: auto;
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 18px 20px;
+      border-radius: 9px;
+      font-size: .9rem;
+      line-height: 1.55;
+      margin: 14px 0 18px;
+      tab-size: 2;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    :not(pre) > code {
+      background: #edf1f4;
+      color: #9b3c32;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: .92em;
+    }
+
+    figure {
+      margin: 20px 0;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: #fbfcfd;
+    }
+
+    figure img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: auto;
+      border-radius: 5px;
+    }
+
+    figcaption {
+      color: var(--muted);
+      font-size: .86rem;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: .94rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    th { background: #edf3f6; color: var(--primary-dark); }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 15px;
+      margin: 14px 0;
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .placeholder {
+      border: 2px dashed #b8c8d1;
+      background: #f8fbfc;
+      color: var(--muted);
+      padding: 22px;
+      text-align: center;
+      border-radius: 8px;
+      margin: 14px 0;
+    }
+
+    .footer {
+      color: var(--muted);
+      text-align: center;
+      font-size: .85rem;
+      padding: 20px 10px 35px;
+    }
+
+    .menu-button {
+      display: none;
+      border: 0;
+      background: white;
+      color: var(--primary-dark);
+      padding: 9px 12px;
+      border-radius: 7px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 850px) {
+      .layout { grid-template-columns: 1fr; margin-top: 16px; }
+      .menu-button { display: inline-block; }
+      .sidebar { display: none; position: static; max-height: none; }
+      .sidebar.open { display: block; }
+      .hero { padding: 28px 24px; }
+      .panel, .lesson-section { padding: 22px 20px; }
+    }
+
+    @media print {
+      body { background: white; }
+      .topbar, .sidebar, .menu-button { display: none !important; }
+      .layout { display: block; max-width: none; margin: 0; padding: 0; }
+      .hero, .panel, .lesson-section { box-shadow: none; break-inside: avoid; }
+      .hero { background: white; color: black; border: 1px solid #bbb; }
+      pre { white-space: pre-wrap; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <span></span><h4><strong>Laboratório de Bioinformática Aplicada/LaBIA - Universidade Federal do Rio de Janeiro</strong></h4></span>
+      <span><h1>Curso de Bioinformática aplicada à saúde</h1></span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="sidebar" id="sidebar" aria-label="Navegação da aula">
+        <h2>Conteúdo da aula</h2>
+        <a href="#inicio">Módulo 4 - Metagenômica</a>
+        <a href="#introducao">1. Introdução</a>
+        <a href="#introducao_1" class="subsection">1.1. Conceitos fundamentais</a>
+        <a href="#introducao_2" class="subsection">1.1. Conceitos fundamentais</a>
+        <a href="#preparo_ambiente_trabalho">2. Preparo do ambiente de trabalho</a>
+        <a href="#preparo_ambiente_trabalho_conda" class="subsection">2.1 Conda</a>
+        <a href="#preparo_ambiente_trabalho_nextflow" class="subsection">2.2 Nextflow</a>
+        <a href="#preparo_ambiente_trabalho_metasentinel" class="subsection">2.3 MetaSentinel</a>
+        <a href="#banco_de_dados">3. Construção dos bancos de dados</a>
+        <a href="#banco_de_dados_kraken2" class="subsection">3.1 Kraken2</a>
+        <a href="#banco_de_dados_diamond" class="subsection">3.2 DIAMOND</a>
+        <a href="#banco_de_dados_amrfinder" class="subsection">3.3 AMRfinder</a>
+        <a href="#amplicon">4. Execução do pipeline - Abordagem Amplicon</a>
+        <a href="#shotgun">5. Execução do pipeline - Abordagem Shotgun</a>
+        <a href="#resultados">6. Resultados do Pipeline</a>
+        <a href="#exercicios">Exercícios</a>
+        <a href="#objetivos">Objetivo</a>
+        <a href="#amostra">Amostra e dados</a>
+        <a href="#referencias">Referências</a>
+      </nav>
+
+    <main class="content">
+      <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="sidebar">
+        ☰ Conteúdo da aula
+      </button>
+
+      <section class="hero" id="inicio">
+        <div class="eyebrow">MÓDULO 4</div>
+        <h1>METAGENÔMICA</h1>
+        <p>Abordagens em metagenômica e aplicação de pipelines</p>
+        <div class="meta">
+          <span>Docente: Luiz Marcelo Ribeiro Tomé</span>
+          <span>Monitor: Luccas Badiani </span>
+        </div>
+      </section>
+
+      <section class="lesson-section" id="introducao">
+        <h1>1. Introdução</h1>
+        <h2 id="introducao_1">1.1. A metagenômica</h2>
+        <p> </p>
+        <h2 id="introducao_2">1.2. As abordagens de metagenômica</h2>
+        <p>Caso o Conda ainda não tenha sido instalado, faça o download pela linha de comando</p>
+      </section>
+
+      <section class="lesson-section" id="preparo_ambiente_trabalho">
+        <h1>2. Instalação e criação do ambiente de trabalho</h1>
+        <p>O <black>Conda</black> é um gerenciador de pacotes e ambientes virtuais que permite instalar e organizar as dependências necessárias para executar diferentes ferramentas de bioinformática. A criação de ambientes isolados garante que cada ferramenta e suas respectivas versões sejam compatíveis entre si, evitando conflitos de dependências e tornando a execução do pipeline reprodutível. </p>
+        <h2 id="preparo_ambiente_trabalho_conda">2.1 Instalação do Conda</h2>
+        <p>Caso o Conda ainda não tenha sido instalado, faça o download pela linha de comando</p>
+        <pre><code>wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh</code></pre>
+        <pre><code>bash Miniconda3-latest-Linux-x86_64.sh</code></pre>
+        <h2 id="preparo_ambiente_trabalho_nextflow">2.2 Criação do ambiente e instalação do Nextflow</h2>
+        <pre><code>conda env create -n nextflow_env -c bioconda nextflow</code></pre>
+        <h2>Ativação do ambiente</h2>
+        <pre><code>conda activate nextflow_env</code></pre>
+        <p>Verifique a instalação do Nextflow</p>
+        <pre><code>nextflow -version</code></pre>
+        <h2 id="preparo_ambiente_trabalho_metasentinel">2.3 Download do MetaSentinel</h2>
+        <pre><code>git clone https://github.com/lmrtome/MetaSentinel.git</code></pre>
+        <pre><code>cd MetaSentinel</code></pre>
+        <div class="callout warning">
+          <strong>Requisitos do sistema</strong>
+          <ul>
+          <li>Linux (recomendado)</li>
+          <li>Conda (Miniconda)</li>
+          <li>Nextflow ≥ 24.x </li>
+          <li>Conexão com internet para instalação das dependências, do pipeline e do banco de dados e para a primeira execução</li>
+          <li>Espaço no armazenamento para os bancos de dados, os resultados e os dados brutos</li>
+        </ul>
+        </div>
+      </section>
+
+      <section class="lesson-section" id="banco_de_dados">
+        <h1>3. Criação dos bancos de dados</h1>
+        <p>Ao longo do pipeline, são utilizados três bancos de dados em cada módulo específico.</p>
+        <h2 id="banco_de_dados_kraken2">Criação do banco de dados Kraken2</h2>
+        <h2 id="banco_de_dados_diamond">Criação do banco de dados DIAMOND</h2>
+        <p></p>
+        <pre><code>conda env create -n diamond_env -c bioconda diamond=2.2.2</code></pre>
+        <details>
+          <summary>Entenda o comando em detalhes</summary>
+          <p>[Explique cada parâmetro, argumento ou parte do código. Você pode duplicar este bloco para diferentes comandos.]</p>
+        </details>
+        <pre><code>wget https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz </code></pre>
+        <pre><code>gunzip uniprot_sprot_fasta.gz</code></pre>
+        <details>
+          <summary>Entenda os comandos em detalhes</summary>
+          <p>[Explique cada parâmetro, argumento ou parte do código. Você pode duplicar este bloco para diferentes comandos.]</p>
+        </details>
+        <pre><code>wget https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz</code></pre>
+        <pre><code>tar -xzf taxdump.tar.gz</code></pre>
+        <details>
+          <summary>Entenda os comandos em detalhes</summary>
+          <p>[Explique cada parâmetro, argumento ou parte do código. Você pode duplicar este bloco para diferentes comandos.]</p>
+        </details>
+        <pre><code>wget https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz</code></pre>
+        <details>
+          <summary>Entenda o comando em detalhes</summary>
+          <p>[Explique cada parâmetro, argumento ou parte do código. Você pode duplicar este bloco para diferentes comandos.]</p>
+        </details>
+        <pre><code>diamond makedb --in uniprot_sprot.fasta.gz
+              --db diamond_database 
+              --taxonmap prot.accession2taxid.gz
+              --taxonnodes nodes.dmp
+              --taxonnames names.dmp</code></pre>
+        <details>
+          <summary>Entenda o comando em detalhes</summary>
+          <p>[Explique cada parâmetro, argumento ou parte do código. Você pode duplicar este bloco para diferentes comandos.]</p>
+        </details>
+        <h2 id="banco_de_dados_amrfinder">Criação do banco de dados AMRFinder</h2>
+        <pre><code></code></pre>
+      </section>
+
+      <section class="lesson-section" id="amplicon">
+        <h1>4. Execução do pipeline - Abordagem Amplicon</h1>
+        <p>[Contextualização da etapa.]</p>
+        <h3>Comando utilizado</h3>
+        <pre><code>nextflow run main.nf 
+    --input /caminho_para_diretório/dados_de_sequenciamento/
+    --threads 10 
+    --headcrop 30 
+    --phredscore 10 
+    --minlen 100 
+    --database_kraken2 /caminho_para_diretório/banco_de_dados_kraken2 
+    -output-dir /caminho_para_diretório/resultados</code></pre>
+        <h3>Parâmetros principais</h3>
+        <table>
+          <thead><tr><th>Parâmetro</th><th>Função</th></tr></thead>
+          <tbody>
+            <tr><td><code>--input</code></td><td>Diretório contendo arquivos de sequenciamento compactados</td></tr>
+            <tr><td><code>--output</code></td><td>Diretório de saída e armazenamento dos resultados das análises</td></tr>
+            <tr><td><code>--threads</code></td><td>[Descrever]</td></tr>
+            <tr><td><code>--minlen</code></td><td>[Descrever]</td></tr>
+            <tr><td><code>--phredscore</code></td><td>[Descrever]</td></tr>
+            <tr><td><code>--headcrop</code></td><td>[Descrever]</td></tr>
+            <tr><td><code>--database_kraken2</td><td>Diretório contendo o banco de dados Kraken2</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="lesson-section" id="shotgun">
+        <h1>5. Execução do pipeline - Abordagem Shotgun</h1>
+        <h3>Comando utilizado</h3>
+        <pre><code>nextflow run main.nf \
+    --run_assembly true 
+    --input /home/user/reads 
+    --threads 10 
+    --headcrop 30 
+    --phredscore 10 
+    --minlen 100 
+    --database_kraken2 /caminho_para_diretório/banco_de_dados_kraken2/
+    --database_diamond /caminho_para_diretório/banco_de_dados_diamond/uniprot_sprot_tax.dmnd 
+    --taxa_names /caminho_para_diretório/banco_de_dados_diamond/names.dmp 
+    --database_amrfinder //caminho_para_diretório/banco_de_dados_amrfinder/latest 
+    --read_type nano-hq 
+    -output-dir /caminho_para_diretório/resultados</code></pre>
+        <h3>Parâmetros principais</h3>
+        <table>
+          <thead><tr><th>Parâmetro</th><th>Função</th></tr></thead>
+          <tbody>
+            <tr><td><code>--input</code></td><td>Diretório contendo arquivos de sequenciamento compactados</td></tr>
+            <tr><td><code>--output</code></td><td>Diretório de saída e armazenamento dos resultados das análises</td></tr>
+            <tr><td><code>--threads</code></td><td>[Descrever]</td></tr>
+            <tr><td><code>--minlen</code></td><td>[Descrever]</td></tr>
+            <tr><td><code>--phredscore</code></td><td>[Descrever]</td></tr>
+            <tr><td><code>--headcrop</code></td><td>[Descrever]</td></tr>
+            <tr><td><code>--database_kraken2</td><td>Diretório contendo o banco de dados Kraken2</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="lesson-section" id="resultados">
+        <h1>6. Resultados do Pipeline</h1>
+        <p>[Descreva como a qualidade, desempenho ou consistência do resultado será avaliada.]</p>
+        <h3>Métricas de avaliação</h3>
+        <ul>
+          <li>[Métrica 1 e o que ela representa.]</li>
+          <li>[Métrica 2 e o que ela representa.]</li>
+          <li>[Métrica 3 e o que ela representa.]</li>
+        </ul>
+        <div class="callout success">
+          <strong>O que observar</strong>
+          [Registre critérios para interpretar se o resultado é adequado ao objetivo da análise.]
+        </div>
+      </section>
+
+      <section class="lesson-section" id="exercicios">
+        <h2>Exercícios e questões para discussão</h2>
+        <ol>
+          <li>[Questão conceitual relacionada à aula.]</li>
+          <li>[Questão prática: peça para executar, modificar ou comparar um comando.]</li>
+          <li>[Questão de interpretação: peça para analisar um resultado.]</li>
+        </ol>
+        <h3>Desafio adicional</h3>
+        <p>[Proponha uma atividade de aprofundamento ou uma alteração no workflow.]</p>
+      </section>
+
+      <section class="lesson-section" id="objetivos">
+        <h2>Objetivos de aprendizagem</h2>
+        <p>Ao final desta aula, espera-se que você seja capaz de:</p>
+        <ul>
+          <li>[Objetivo 1: descrever uma habilidade ou conceito.]</li>
+          <li>[Objetivo 2: executar uma etapa do workflow.]</li>
+          <li>[Objetivo 3: interpretar os resultados obtidos.]</li>
+        </ul>
+        <h3>Pré-requisitos</h3>
+        <p>[Liste conhecimentos, programas ou arquivos necessários antes de iniciar.]</p>
+      </section>
+
+      <section class="lesson-section" id="amostra">
+        <h2>Amostra selecionada para a execução do workflow</h2>
+        <p>[Descreva a origem dos dados, organismo, tipo de amostra, tecnologia de sequenciamento e características relevantes.]</p>
+        <table>
+          <thead><tr><th>Característica</th><th>Descrição</th></tr></thead>
+          <tbody>
+            <tr><td>Organismo / amostra</td><td>[Preencher]</td></tr>
+            <tr><td>Tipo de dado</td><td>[Ex.: reads paired-end]</td></tr>
+            <tr><td>Plataforma</td><td>ONT - Oxford Nanopore technology</td></tr>
+            <tr><td>Arquivo de entrada</td><td><code>[arquivo.fastq.gz]</code></td></tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          <strong>Informação importante</strong>
+          [Inclua aqui observações sobre os dados, diretórios, nomes de arquivos ou condições para reproduzir a análise.]
+        </div>
+      </section>
+
+      <section class="lesson-section" id="referencias">
+        <h1>Referências e materiais complementares</h1>
+        <h2>Referências</h2>
+        <ol>
+          <li>[Autor(es). Título. Periódico, ano. DOI ou URL.]</li>
+          <li>[Material complementar, tutorial ou conjunto de dados.]</li>
+        </ol>
+        <h2>Materiais complementares</h2>
+        <ol>
+          <li>[Autor(es). Título. Periódico, ano. DOI ou URL.]</li>
+          <li>[Material complementar, tutorial ou conjunto de dados.]</li>
+        </ol>
+      </section>
+
+      <footer class="footer">
+        Laboratório de Bioinformática Aplicada - UFRJ - CCS - ICB
+      </footer>
+      <footer class="footer">
+        Material produzido por Luccas Badiani · 2026 · Metagenômica
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const menuButton = document.getElementById("menuButton");
+    const sidebar = document.getElementById("sidebar");
+
+    menuButton.addEventListener("click", () => {
+      const isOpen = sidebar.classList.toggle("open");
+      menuButton.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    sidebar.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        sidebar.classList.remove("open");
+        menuButton.setAttribute("aria-expanded", "false");
+      });
+    });
+  </script>
+</body>
+</html>
