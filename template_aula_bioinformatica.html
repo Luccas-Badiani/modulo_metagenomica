@@ -11,7 +11,7 @@
   --primary: #174D38;
   --primary-dark: #103A2A;
   --accent: #47866A;
-
+  --green:#adc0b8;
   --page: #F3F6F3;
   --surface: #FFFFFF;
 
@@ -251,7 +251,7 @@
     }
 
     figcaption {
-      color: var(--muted);
+      color: var(--code-bg);
       font-size: .86rem;
       text-align: center;
       margin-top: 10px;
@@ -277,6 +277,16 @@
       border-radius: 8px;
       padding: 12px 15px;
       margin: 14px 0;
+    }
+
+    details.explicacao {
+      background: var(--green);
+      color: var(--code-bg);
+      border-color: var(--muted);
+    }
+
+    details.explicacao summary{
+      color: var(--code-bg);
     }
 
     summary {
@@ -347,8 +357,8 @@
         <h2>Conteúdo da aula</h2>
         <a href="#inicio">Módulo 4 - Metagenômica</a>
         <a href="#introducao">1. Introdução</a>
-        <a href="#introducao_1" class="subsection">1.1. Conceitos fundamentais</a>
-        <a href="#introducao_2" class="subsection">1.2. Conceitos fundamentais</a>
+        <a href="#introducao_1" class="subsection">1.1. Vigilância genômica e detecção de patógenos</a>
+        <a href="#introducao_2" class="subsection">1.2. A metagenômica e suas abordagens</a>
         <a href="#introducao_3" class="subsection">1.3. Workflow - MetaSentinel</a>
         <a href="#preparo_ambiente_trabalho">2. Preparo do ambiente de trabalho</a>
         <a href="#preparo_ambiente_trabalho_conda" class="subsection">2.1 Conda</a>
@@ -384,62 +394,63 @@
 
       <section class="lesson-section" id="introducao">
         <h1>1. Introdução</h1>
-        <h2 id="introducao_1">1.1 A metagenômica</h2>
+        <h2 id="introducao_1">1.1. Vigilância genômica e detecção de patógenos</h2>
         <p></p>
-        <h2 id="introducao_2">1.2 As abordagens de metagenômica</h2>
+        <h2 id="introducao_2">1.2. A metagenômica e suas abordagens</h2>
         <p></p>
-        <h2 id="introducao_3">1.3 Workflow - MetaSentinel</h2>
+        <h2 id="introducao_3">1.3. Workflow - MetaSentinel</h2>
         <p>O MetaSentinel é um pipeline metagenômico utilizado para a detecção de patógenos e vigilância genômica. O workflow é dividido em quatro estágios:
         <h3>Controle de qualidade, trimagem e filtragem dos dados</h3>
         <p style="text-align:justify;">
-          No primeiro estágio do pipeline se inicia a avaliação da qualidade dos dados brutos de sequenciamento utilizando o <black>NanoPlot</black>. Em seguida, os arquivos são submetidos a um tratamento com o <black>Chopper</black> em que são removidos adaptadores nas extremidades iniciais das sequências e uma etapa de filtragem ocorre baseando-se em critérios de qualidade e comprimento mínimo. Após esta etapa, a qualidade dos dados tratados é reavaliada com o NanoPlot e os resultados são consolidados em um relatório utilizando o MultiQC.  
+          No primeiro estágio do pipeline se inicia a avaliação da qualidade dos dados brutos de sequenciamento utilizando o <strong>NanoPlot</strong>. Em seguida, os arquivos são submetidos a um tratamento com o <strong>Chopper</strong> em que são removidos adaptadores nas extremidades iniciais das sequências e uma etapa de filtragem ocorre baseando-se em critérios de qualidade e comprimento mínimo. Após esta etapa, a qualidade dos dados tratados é reavaliada com o NanoPlot e os resultados são consolidados em um relatório utilizando o <strong>MultiQC</strong>.  
         </p>
         <h3>Classificação taxonômica</h3>
         <p style="text-align:justify;">
-          No primeiro estágio do pipeline se inicia a avaliação da qualidade dos dados brutos de sequenciamento utilizando o <black>NanoPlot</black>. Em seguida, os arquivos são submetidos a um tratamento com o <black>Chopper</black> em que são removidos adaptadores nas extremidades iniciais das sequências e uma etapa de filtragem ocorre baseando-se em critérios de qualidade e comprimento mínimo. Após esta etapa, a qualidade dos dados tratados é reavaliada com o NanoPlot e os resultados são consolidados em um relatório utilizando o MultiQC.  
+          O segundo estágio recebe as sequências filtradas e realiza a classificação taxonômica. O <strong>Kraken2</strong> fragmenta cada sequência tratada em segmentos menores de tamanho fixo, os k-mers, e consulta cada fragmento em um banco de dados que associa os k-mers a táxons. Havendo correspondência, o Kraken2 atribui a sequência ao táxon mais específico compatível com os k-mers encontrados. Quando os k-mers apontam para mais de um táxon, a sequência é atribuída ao ancestral comum mais próximo. <br>
+          Após a identificação dos organismos presentes na amostra, os relatórios gerados pelo Kraken2 são enviados a um script em R, que estima a proporção de cada organismo identificado e gera um gráfico com os 20 mais abundantes. <br>
+          As etapas de classificação taxonômica e de quantificação são feitas diretamente nas reads, portanto não dependem da montagem de contigs.
         </p>
         <h3>Montagem de novo</h3>
         <p style="text-align:justify;">
-          No primeiro estágio do pipeline se inicia a avaliação da qualidade dos dados brutos de sequenciamento utilizando o <black>NanoPlot</black>. Em seguida, os arquivos são submetidos a um tratamento com o <black>Chopper</black> em que são removidos adaptadores nas extremidades iniciais das sequências e uma etapa de filtragem ocorre baseando-se em critérios de qualidade e comprimento mínimo. Após esta etapa, a qualidade dos dados tratados é reavaliada com o NanoPlot e os resultados são consolidados em um relatório utilizando o MultiQC.  
+          No terceiro estágio, é utilizado o software <strong>Flye</strong>, que reúne em contigs as sequências previamente tratadas pelo Chopper. A montagem é feita individualmente para cada amostra: o Flye identifica as sobreposições entre as reads e, a partir da união delas, constrói sequências maiores e contíguas, os contigs. O resultado desta etapa é um arquivo contendo sequências longas e lineares, o que possibilita a anotação de genes com maior precisão, a quantificação por sequência montada e a localização de genes de resistência. <br>
+          Os arquivos gerados nesta etapa servem de base para os estágios seguintes do workflow.
+        </p>
+        <h3>Anotação</h3>
+        <p style="text-align:justify;">
+          No quarto estágio, os contigs gerados pelo Flye são submetidos à anotação funcional e à busca por genes de resistência, por meio dos softwares <strong>DIAMOND</strong> e <strong>AMRFinderPlus</strong>. O DIAMOND é um alinhador de sequências proteicas de alto desempenho: ele traduz os contigs nos seis quadros de leitura possíveis e alinha as sequências traduzidas contra o banco de proteínas UniProt. Os alinhamentos significativos são associados ao banco de taxonomia do NCBI, o que permite atribuir a cada contig uma função provável e um táxon de origem. <br> 
+          Em paralelo, o AMRFinderPlus compara os contigs com o banco curado de genes de resistência antimicrobiana do NCBI, identificando genes associados à resistência a antimicrobianos e indicando a identidade, a cobertura e a classe de resistência de cada detecção. <br>
+          Como resultado, esta etapa gera uma tabela de alinhamentos do DIAMOND, com a função e a taxonomia atribuídas, por meio de um número identificador, a cada contig, e uma tabela do AMRFinderPlus, com os genes de resistência detectados. Esses arquivos fornecem a identificação dos contigs usada na etapa seguinte, de quantificação da abundância, e permitem relacionar cada gene de resistência ao organismo de origem.
         </p>
         <h3>Quantificação</h3>
         <p style="text-align:justify;">
-          No primeiro estágio do pipeline se inicia a avaliação da qualidade dos dados brutos de sequenciamento utilizando o <black>NanoPlot</black>. Em seguida, os arquivos são submetidos a um tratamento com o <black>Chopper</black> em que são removidos adaptadores nas extremidades iniciais das sequências e uma etapa de filtragem ocorre baseando-se em critérios de qualidade e comprimento mínimo. Após esta etapa, a qualidade dos dados tratados é reavaliada com o NanoPlot e os resultados são consolidados em um relatório utilizando o MultiQC.  
+          No último estágio, estima-se a abundância relativa de cada contig nas amostras. As reads tratadas são mapeadas nos contigs montados pelo Flye com o <strong>Minimap2</strong>, e os alinhamentos resultantes são usados pelo <strong>Salmon</strong> para quantificar cada sequência. O Salmon estima a abundância em TPM (<i>transcripts per million</i>), uma medida que normaliza a contagem de reads pelo comprimento do contig e pela profundidade total de sequenciamento da amostra. Isso permite comparar contigs de tamanhos diferentes e amostras com números distintos de reads. Em seguida, um script feito em linguagem R integra os valores de TPM às anotações do DIAMOND, de modo que cada contig quantificado seja associado à função e ao táxon atribuídos na etapa anterior. <br>
+          Como resultado, o estágio gera um gráfico com os 20 contigs de maior TPM por amostra, ordenados do menor para o maior valor, com a anotação correspondente. Assim, é possível identificar quais organismos e funções predominam em cada amostra, complementando a visão taxonômica obtida diretamente das reads no segundo estágio.  
         </p>  
+        <figure>
+        <img src="imagens/metasentinel_metromap.svg" alt="Top 20 espécies da amostra barcode01">
+        <figcaption><strong>Figura .</strong>Visão geral sobre o workflow MetaSentinel.</figcaption>
+        </figure>
       </section>
 
       <section class="lesson-section" id="preparo_ambiente_trabalho">
         <h1>2. Instalação e criação do ambiente de trabalho</h1>
         <p>O <black>Conda</black> é um gerenciador de pacotes e ambientes virtuais que permite instalar e organizar as dependências necessárias para executar diferentes ferramentas de bioinformática. A criação de ambientes isolados garante que cada ferramenta e suas respectivas versões sejam compatíveis entre si, evitando conflitos de dependências e tornando a execução do pipeline reprodutível. </p>
         <h2 id="preparo_ambiente_trabalho_conda">2.1 Instalação do Conda</h2>
-        <p>Caso o Conda ainda não tenha sido instalado, faça o download pela linha de comando</p>
+        <p>Caso o Conda ainda não tenha sido instalado, faça o download pela linha de comando.</p>
         <pre><code>wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh</code></pre>
+        <p>Execute o arquivo de instalação do Conda: </p>
         <pre><code>bash Miniconda3-latest-Linux-x86_64.sh</code></pre>
-        <details>
-          <summary>Entenda os comandos em detalhes</summary>
-          <p>[Explique cada parâmetro, argumento ou parte do código. Você pode duplicar este bloco para diferentes comandos.]</p>
-        </details>
         <h2 id="preparo_ambiente_trabalho_nextflow">2.2 Criação do ambiente e instalação do Nextflow</h2>
-        <pre><code>conda env create -n nextflow_env -c bioconda nextflow</code></pre>
-        <details>
-          <summary>Entenda o comando em detalhe</summary>
-          <p>[Explique cada parâmetro, argumento ou parte do código. Você pode duplicar este bloco para diferentes comandos.]</p>
-        </details>
-        <h2>Ativação do ambiente</h2>
+        <p>Crie um ambiente Conda instalando o Nextflow.</p>
+        <pre><code>conda create -n nextflow_env -c bioconda nextflow</code></pre>
+        <p>Ative o ambiente:</p>
         <pre><code>conda activate nextflow_env</code></pre>
         <p>Verifique a instalação do Nextflow</p>
         <pre><code>nextflow -version</code></pre>
-        <details>
-          <summary>Entenda os comandos em detalhes</summary>
-          <p>[Explique cada parâmetro, argumento ou parte do código. Você pode duplicar este bloco para diferentes comandos.]</p>
-        </details>
         <h2 id="preparo_ambiente_trabalho_metasentinel">2.3 Download do MetaSentinel</h2>
+        <p>Faça o download do pipeline diretamente da página oficial do GitHub: </p>
         <pre><code>git clone https://github.com/lmrtome/MetaSentinel.git</code></pre>
         <pre><code>cd MetaSentinel</code></pre>
-        <details>
-          <summary>Entenda os comandos em detalhes</summary>
-          <p>[Explique cada parâmetro, argumento ou parte do código. Você pode duplicar este bloco para diferentes comandos.]</p>
-        </details>
         <div class="callout warning">
           <strong>Requisitos do sistema</strong>
           <ul>
@@ -456,13 +467,16 @@
         <h1>3. Criação dos bancos de dados</h1>
         <p>Ao longo do pipeline, são utilizados três bancos de dados em cada módulo específico.</p>
         <h2 id="banco_de_dados_kraken2">Criação do banco de dados Kraken2</h2>
+        <p>Crie um ambiente conda com a ferramenta Kraken2.</p>
+        <pre><code>conda create -n kraken2_env -c bioconda kraken2</code></pre>
+        <p>Ative o ambiente:</p>
+        <pre><code>conda activate kraken2_env</code></pre>
+        <hr>
         <h2 id="banco_de_dados_diamond">Criação do banco de dados DIAMOND</h2>
-        <p></p>
-        <pre><code>conda env create -n diamond_env -c bioconda diamond=2.2.2</code></pre>
-        <details>
-          <summary>Entenda o comando em detalhes</summary>
-          <p>[Explique cada parâmetro, argumento ou parte do código. Você pode duplicar este bloco para diferentes comandos.]</p>
-        </details>
+        <p>Crie um ambiente Conda com a ferramenta DIAMOND.</p>
+        <pre><code>conda create -n diamond_env -c bioconda diamond=2.2.2</code></pre>
+        <p>Ative o ambiente:</p>
+        <pre><code>conda activate diamond_env</code></pre>
         <pre><code>wget https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz </code></pre>
         <pre><code>gunzip uniprot_sprot_fasta.gz</code></pre>
         <details>
@@ -480,6 +494,7 @@
           <summary>Entenda o comando em detalhes</summary>
           <p>[Explique cada parâmetro, argumento ou parte do código. Você pode duplicar este bloco para diferentes comandos.]</p>
         </details>
+        <p>Construa o banco de dados DIAMOND.</p>
         <pre><code>diamond makedb --in uniprot_sprot.fasta.gz
               --db diamond_database 
               --taxonmap prot.accession2taxid.gz
@@ -489,8 +504,19 @@
           <summary>Entenda o comando em detalhes</summary>
           <p>[Explique cada parâmetro, argumento ou parte do código. Você pode duplicar este bloco para diferentes comandos.]</p>
         </details>
-        <h2 id="banco_de_dados_amrfinder">Criação do banco de dados AMRFinder</h2>
-        <pre><code></code></pre>
+        <hr>
+        <h2 id="banco_de_dados_amrfinder">Criação do banco de dados AMRFinder.</h2>
+        <p>Crie um ambiente Conda com a ferramente AMRFinder</p>
+        <pre><code>conda create -n amrfinder_env -c bioconda ncbi-amrfinderplus</code></pre>
+        <p>Ative o ambiente:</p>
+        <pre><code>conda activate amrfinder_env</code></pre>
+        <p>Utilize o comando para construir o banco de dados.</p>
+        <pre><code>amrfinder_update -d ~/database/amrfinderplus</code></pre>
+        <pre><code>amrfinder --database_version</code></pre>
+         <details>
+          <summary>Entenda os comandos em detalhes</summary>
+          <p>[Explique cada parâmetro, argumento ou parte do código. Você pode duplicar este bloco para diferentes comandos.]</p>
+        </details>
       </section>
 
       <section class="lesson-section" id="amplicon">
@@ -507,15 +533,15 @@
     -output-dir /caminho_para_diretório/resultados</code></pre>
         <h3>Parâmetros principais</h3>
         <table>
-          <thead><tr><th>Parâmetro</th><th>Função</th></tr></thead>
+          <thead><tr><th>Parâmetro</th><th>Função</th><th>Padrão</th></tr></thead>
           <tbody>
-            <tr><td><code>--input</code></td><td>Diretório contendo arquivos de sequenciamento compactados</td></tr>
-            <tr><td><code>-output-dir</code></td><td>Diretório de saída e armazenamento dos resultados das análises</td></tr>
-            <tr><td><code>--threads</code></td><td>[Descrever]</td></tr>
-            <tr><td><code>--minlen</code></td><td>[Descrever]</td></tr>
-            <tr><td><code>--phredscore</code></td><td>[Descrever]</td></tr>
-            <tr><td><code>--headcrop</code></td><td>[Descrever]</td></tr>
-            <tr><td><code>--database_kraken2</td><td>Diretório contendo o banco de dados Kraken2</td></tr>
+            <tr><td><code>--input</code></td><td>Diretório contendo arquivos de sequenciamento compactados</td><th>Exigido</th></tr>
+            <tr><td><code>-output-dir</code></td><td>Diretório de saída e armazenamento dos resultados das análises</td><th>MetaSentinel_results</th></tr>
+            <tr><td><code>--threads</code></td><td>Número de threads utilizadas pelo CPU</td><th>Função</th></tr>
+            <tr><td><code>--minlen</code></td><td>Tamanho mínimo mantido após a filtragem</td><th>100</th></tr>
+            <tr><td><code>--phredscore</code></td><td>Qualidade Phredscore mínimo mantido após a filtragem</td><th>10</th></tr>
+            <tr><td><code>--headcrop</code></td><td>Número de bases removidas do início de cada sequência</td><td>30</td></tr>
+            <tr><td><code>--database_kraken2</td><td>Caminho para o diretório contendo o banco de dados Kraken2</td><td>Exigido</td></tr>
           </tbody>
         </table>
       </section>
@@ -533,25 +559,24 @@
     --database_kraken2 /caminho_para_diretório/banco_de_dados_kraken2/
     --database_diamond /caminho_para_diretório/banco_de_dados_diamond/uniprot_sprot_tax.dmnd 
     --taxa_names /caminho_para_diretório/banco_de_dados_diamond/names.dmp 
-    --database_amrfinder //caminho_para_diretório/banco_de_dados_amrfinder/latest 
+    --database_amrfinder /caminho_para_diretório/banco_de_dados_amrfinder/latest 
     --read_type nano-hq 
     -output-dir /caminho_para_diretório/resultados</code></pre>
         <h3>Parâmetros principais</h3>
         <table>
-          <thead><tr><th>Parâmetro</th><th>Função</th></tr></thead>
+          <thead><tr><th>Parâmetro</th><th>Função</th><th>Padrão</th></tr></thead>
           <tbody>
-            <tr><td><code>--input</code></td><td>Diretório contendo arquivos de sequenciamento compactados</td></tr>
-            <tr><td><code>-output-dir</code></td><td>Diretório de saída e armazenamento dos resultados das análises</td></tr>
-            <tr><td><code>--threads</code></td><td>[Descrever]</td></tr>
-            <tr><td><code>--minlen</code></td><td>[Descrever]</td></tr>
-            <tr><td><code>--phredscore</code></td><td>[Descrever]</td></tr>
-            <tr><td><code>--headcrop</code></td><td>[Descrever]</td></tr>
-            <tr><td><code>--database_kraken2</td><td>Diretório contendo o banco de dados Kraken2</td></tr>
-            <tr><td><code>--run_assembly</td><td>Diretório contendo o banco de dados Kraken2</td></tr>
-            <tr><td><code>--database_diamond</td><td>Diretório contendo o banco de dados DIAMOND</td></tr>    
-            <tr><td><code>--taxa_names</td><td>Diretório contendo o banco de dados Kraken2</td></tr>
-            <tr><td><code>--database_amrfinder</td><td>Diretório contendo o banco de dados Kraken2</td></tr> 
-            <tr><td><code>--read_type</td><td>Diretório contendo o banco de dados Kraken2</td></tr>
+             <tr><td><code>--input</code></td><td>Diretório contendo arquivos de sequenciamento compactados</td><th>Exigido</th></tr>
+            <tr><td><code>-output-dir</code></td><td>Diretório de saída e armazenamento dos resultados das análises</td><th>MetaSentinel_results</th></tr>
+            <tr><td><code>--threads</code></td><td>Número de threads utilizadas pelo CPU</td><th>Função</th></tr>
+            <tr><td><code>--minlen</code></td><td>Tamanho mínimo mantido após a filtragem</td><th>100</th></tr>
+            <tr><td><code>--phredscore</code></td><td>Qualidade Phredscore mínimo mantido após a filtragem</td><th>10</th></tr>
+            <tr><td><code>--headcrop</code></td><td>Número de bases removidas do início de cada sequência</td><td>30</td></tr>
+            <tr><td><code>--database_kraken2</td><td>Caminho para o diretório contendo o banco de dados Kraken2</td><td>Exigido</td></tr>
+            <tr><td><code>--database_diamond</td><td>Caminho para o diretório contendo o banco de dados formatado DIAMOND (.dmnd)</td><td>Assembly workflow</td></tr>
+            <tr><td><code>--taxa_names</td><td>Caminho para o arquivo de taxonomia do NCBI <code>names.dmp</code> usado para anotação</td><td>Assembly workflow</td></tr>
+            <tr><td><code>--database_amrfinder</td><td>Caminho para o diretório contendo o banco de dados AMRFinder</td><td>Assembly workflow</td></tr>
+            <tr><td><code>--read_type<td>Tipo de leitura do Flye (<code>nano-corr</code>, <code>nano-raw</code>, <code>nano-hq</code>)</td><td><code>nano-hq</code></td></tr>
           </tbody>
         </table>
       </section>
