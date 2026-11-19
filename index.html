@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Template reutilizável para aulas práticas de bioinformática.">
+  <title>Metagenômica | Aula prática</title>
+
+  <style>
+   :root {
+  --primary: #174D38;
+  --primary-dark: #103A2A;
+  --accent: #47866A;
+  --green:#adc0b8;
+  --page: #F3F6F3;
+  --surface: #FFFFFF;
+
+  --text: #26382F;
+  --muted: #66776D;
+  --border: #DCE5DE;
+
+  --code-bg: #192820;
+  --code-text: #E7F0E9;
+
+  --info-bg: #EAF2EC;
+  --warning-bg: #FFF5DF;
+  --success-bg: #E4F1E6;
+  }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.7;
+    }
+
+    a { color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    a:hover{
+      color: #174D38;
+      text-decoration: underline;
+    }
+
+    .topbar {
+        background: var(--primary-dark);
+        color: white;
+        padding: 13px 24px;
+        font-size: .92rem;
+        letter-spacing: .02em;
+    }
+
+    .topbar-inner {
+        max-width: 1400px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-align: center;
+    }
+
+    .topbar-inner h1,
+    .topbar-inner h4 {
+        width: 100%;
+        margin: 0;
+        text-align: center;
+    }
+
+
+    .layout {
+      max-width: 1400px;
+      margin: 28px auto;
+      padding: 0 22px;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 26px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      box-shadow: var(--shadow);
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+    }
+
+    .sidebar a.subsection{
+      padding-left: 24px;
+      font-size: 0.85rem;
+      color: var(--text)
+    }
+
+    .sidebar h2 {
+      margin: 0 0 12px;
+      color: var(--primary);
+      font-size: .95rem;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+
+    .sidebar a {
+      display: block;
+      color: var(--text);
+      text-decoration: none;
+      padding: 8px 10px;
+      border-radius: 7px;
+      font-size: .92rem;
+      line-height: 1.4;
+    }
+
+    .sidebar a:hover, .sidebar a:focus {
+      background: var(--info-bg);
+      color: var(--primary-dark);
+      outline: none;
+    }
+
+    .content { min-width: 0; }
+
+    .hero {
+      background: linear-gradient(130deg, var(--primary-dark), var(--primary), var(--accent));
+      color: white;
+      padding: 38px 42px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: .78rem;
+      opacity: .85;
+      font-weight: bold;
+    }
+
+    .hero h1 {
+      margin: 9px 0 12px;
+      font-size: clamp(1.8rem, 4vw, 2.7rem);
+      line-height: 1.15;
+    }
+
+    .hero p { margin: 0; max-width: 760px; opacity: .92; }
+
+    .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 22px;
+      font-size: .9rem;
+      opacity: .95;
+    }
+
+    .meta span { display: inline-flex; gap: 7px; align-items: center; }
+
+    .panel, .lesson-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 26px 30px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2, .lesson-section h2 {
+      color: var(--primary);
+      margin: 0 0 14px;
+      line-height: 1.3;
+    }
+
+    .lesson-section h2 {
+      font-size: 1.35rem;
+      padding-bottom: 11px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .lesson-section h3 {
+      color: var(--primary-dark);
+      margin: 24px 0 8px;
+      font-size: 1.08rem;
+    }
+
+    p { margin: 0 0 14px; }
+    ul, ol { padding-left: 24px; }
+    li { margin-bottom: 7px; }
+
+    .tag {
+      display: inline-block;
+      background: #e5f0f3;
+      color: var(--primary-dark);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: .78rem;
+      font-weight: bold;
+      margin: 0 5px 7px 0;
+    }
+
+    .callout {
+      padding: 15px 18px;
+      border-left: 4px solid var(--accent);
+      background: var(--info-bg);
+      border-radius: 7px;
+      margin: 18px 0;
+    }
+
+    .callout.warning {
+      background: var(--warning-bg);
+      border-left-color: #d59a28;
+    }
+
+    .callout.success {
+      background: var(--success-bg);
+      border-left-color: #398052;
+    }
+
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    pre {
+      overflow-x: auto;
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 18px 20px;
+      border-radius: 9px;
+      font-size: .9rem;
+      line-height: 1.55;
+      margin: 14px 0 18px;
+      tab-size: 2;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    :not(pre) > code {
+      background: #edf1f4;
+      color: #9b3c32;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: .92em;
+    }
+
+    figure {
+      margin: 20px 0;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: #fbfcfd;
+    }
+
+    figure img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: auto;
+      border-radius: 5px;
+    }
+
+    figcaption {
+      color: var(--code-bg);
+      font-size: .86rem;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: .94rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    th { background: #edf3f6; color: var(--primary-dark); }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 15px;
+      margin: 14px 0;
+    }
+
+    details.explicacao {
+      background: var(--green);
+      color: var(--code-bg);
+      border-color: var(--muted);
+    }
+
+    details.explicacao summary{
+      color: var(--code-bg);
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .placeholder {
+      border: 2px dashed #b8c8d1;
+      background: #f8fbfc;
+      color: var(--muted);
+      padding: 22px;
+      text-align: center;
+      border-radius: 8px;
+      margin: 14px 0;
+    }
+
+    .footer {
+      color: var(--muted);
+      text-align: center;
+      font-size: .85rem;
+      padding: 20px 10px 35px;
+    }
+
+    .menu-button {
+      display: none;
+      border: 0;
+      background: white;
+      color: var(--primary-dark);
+      padding: 9px 12px;
+      border-radius: 7px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 850px) {
+      .layout { grid-template-columns: 1fr; margin-top: 16px; }
+      .menu-button { display: inline-block; }
+      .sidebar { display: none; position: static; max-height: none; }
+      .sidebar.open { display: block; }
+      .hero { padding: 28px 24px; }
+      .panel, .lesson-section { padding: 22px 20px; }
+    }
+
+    @media print {
+      body { background: white; }
+      .topbar, .sidebar, .menu-button { display: none !important; }
+      .layout { display: block; max-width: none; margin: 0; padding: 0; }
+      .hero, .panel, .lesson-section { box-shadow: none; break-inside: avoid; }
+      .hero { background: white; color: black; border: 1px solid #bbb; }
+      pre { white-space: pre-wrap; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <h4>
+        <strong>
+          Laboratório de Bioinformática Aplicada/LaBIA -
+          Universidade Federal do Rio de Janeiro
+        </strong>
+      </h4>
+
+      <h1>Curso de Bioinformática aplicada à saúde</h1>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="sidebar" id="sidebar" aria-label="Navegação da aula">
+        <h2>Conteúdo da aula</h2>
+        <a href="#inicio">Módulo 4 - Metagenômica</a>
+        <a href="#introducao">1. Introdução</a>
+        <a href="#introducao_1" class="subsection">1.1. Metagenômica</a>
+        <a href="#introducao_2" class="subsection">1.2. MetaSentinel</a>
+        <a href="#preparo_ambiente_trabalho">2. Preparo do ambiente de trabalho</a>
+        <a href="#preparo_ambiente_trabalho_conda" class="subsection">2.1 Conda</a>
+        <a href="#preparo_ambiente_trabalho_nextflow" class="subsection">2.2 Nextflow</a>
+        <a href="#preparo_ambiente_trabalho_metasentinel" class="subsection">2.3 MetaSentinel</a>
+        <a href="#preparo_ambiente_trabalho_estrutura" class="subsection">2.4 Estrutura e organização do diretório</a>
+        <a href="#banco_de_dados">3. Construção dos bancos de dados</a>
+        <a href="#banco_de_dados_kraken2" class="subsection">3.1 Kraken2</a>
+        <a href="#banco_de_dados_diamond" class="subsection">3.2 DIAMOND</a>
+        <a href="#banco_de_dados_amrfinder" class="subsection">3.3 AMRfinder</a>
+        <a href="#amplicon">4. Execução do pipeline - Abordagem Amplicon</a>
+        <a href="#shotgun">5. Execução do pipeline - Abordagem Shotgun</a>
+        <a href="#resultados">6. Resultados do Pipeline</a>
+        <a href="#exercicios">Exercícios</a>
+        <a href="#objetivos">Objetivo</a>
+        <a href="#amostra">Amostra e dados</a>
+        <a href="#referencias">Referências</a>
+      </nav>
+
+    <main class="content">
+      <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="sidebar">
+        ☰ Conteúdo da aula
+      </button>
+
+      <section class="hero" id="inicio">
+        <div class="eyebrow">MÓDULO 4</div>
+        <h1>METAGENÔMICA</h1>
+        <p>Abordagens em metagenômica e aplicação de pipelines</p>
+        <div class="meta">
+          <span>Docente: Luiz Marcelo Ribeiro Tomé</span>
+          <span>Monitor: Luccas Badiani </span>
+        </div>
+      </section>
+
+      <section class="lesson-section" id="introducao">
+        <h1>1. Introdução</h1>
+        <h2 id="introducao_1">1.1. A metagenômica e suas abordagens</h2>
+        <p style="text-align:justify;">
+        A metagenômica consiste na análise do material genético de uma comunidade de microrganismos. Em contraste com as técnicas tradicionais de diagnóstico, como o isolamento de culturas, a detecção por anticorpos e a identificação por PCR, a metagenômica permite caracterizar todo o DNA ou RNA presente em uma amostra. Essa característica permite a aplicação em diversas áreas, como o diagnóstico de infecções sem causa definida, a investigação de surtos, a vigilância de patógenos emergentes, o monitoramento da resistência antimicrobiana e a descoberta de novos vírus. A metagenômica permite estPor não depender de hipóteses prévias sobre quais organismos estão presentes, ela também possibilita estudar reservatórios animais e fontes ambientais, como o esgoto, o que a torna uma ferramenta relevante no contexto de Saúde Única. <br>
+        <h3>Abordagem amplicon</h3>
+        <p style="text-align: justify;">Na abordagem amplicon, é utilizada PCR para sequenciar e amplificar regiões-alvo conservadas em microrganismos, como o gene 16S rNA em bactérias e ITS-LSU em fungos. Esta abordagem apresenta menor custo por se concentrar em um único marcador taxonômico e é aplicada para descrição da composição e abundância das comunidades microbianas presentes na amostra. Em contrapartida, esta abordagem impossibilita a detecção de vírus por não possuírem um gene marcador e produz pouca informação funcional ou genômica, como os genes de virulência e de resistência antimicrobiana.</p>
+        <h3>Abordagem shotgun</h3>
+        <p style="text-align: justify;">Na abordagem shotgun, todo o DNA e o RNA, após a preparação de uma biblioteca de cDNA, da amostra é fragmentado e sequenciado sem um alvo definido. Essa abordagem permite identificar simultaneamente vírus, bactérias, fungos e parasitas a nível de espécie e linhagens. Assim, é possível reconstruir genomas por ferramentas de montagem <i>de novo</i> e analisar genes de virulência e resistência. Esta abordagem apresenta um custo maior quando comparada à abordagem amplicon, requer maior complexidade nos protocolos e exige a depleção do material do hospedeiro.</p>
+
+        <h2 id="introducao_2">1.2. MetaSentinel - Pipeline para vigilância genômica e detecção de patógenos</h2>
+        <p style="text-align:justify;">
+          O sequenciamento de leituras longas da Oxford Nanopore Technologies (ONT) tem ganhado destaque por reunir portabilidade, baixo custo de equipamento e geração de dados em tempo real, o que reduz o tempo de resposta e viabiliza análises em campo e em laboratórios com infraestrutura limitada, características particularmente úteis em surtos e na vigilância ambiental e zoonótica. Contudo, o volume e a complexidade dos dados gerados exigem que a bioinformática ocupe um papel central. As ferramentas aplicadas na bioinformática transformam os dados brutos produzidos por ambas as abordagens metagenômicas em informações interpretáveis, por meio de diferentes etapas que envolvem o controle de qualidade, a classificação taxonômica contra bancos de referência, a montagem de genomas, o alinhamento contra bancos de dados de proteínas para anotação funcional e a quantificação da abundância dos organismos presentes na amostra. Esse processamento permite a identificação de patógenos, a detecção de genes de resistência antimicrobiana e a caracterização de variantes. <br>
+          Sob a perspectiva da Saúde Única, que integra a saúde humana, animal e ambiental, essa capacidade analítica é ainda mais relevante, já que amostras clínicas, veterinárias e ambientais precisam ser processadas e comparadas de maneira harmonizada. Entretanto, a ausência de fluxos de trabalho padronizados, validados e reprodutíveis continua sendo um dos principais obstáculos para a adoção rotineira da metagenômica na vigilância e no diagnóstico. Diante disso, a construção de workflows bioinformáticos automatizados, modulares e de fácil implementação torna-se fundamental para garantir a qualidade, a rastreabilidade e a comparabilidade dos resultados entre laboratórios.<br>
+          Neste contexto, o MetaSentinel é um pipeline metagenômico desenvolvido para a detecção de patógenos e vigilância genômica. É implementado em Nextflow, um sistema de gerenciamento de workflows amplamente adotado em bioinformática, que permite encadear ferramentas em etapas independentes e escaláveis. Através da versão atualizada da linguagem específica de domínio (DSL2) construída sobre Groovy, o Nextflow permite organizar o fluxo de dados por meio de processos e canais, o que favorece o paralelismo automático das tarefas e declarar processos e sub-workflows em módulos separados, que podem ser importados e reutilizados em diferentes pipelines, tornando o código mais organizado, de fácil manutenção e adequado à construção de workflows complexos. Além disso, o Nextflow integra-se a gerenciadores de ambiente ,como Conda, garantindo a reprodutibilidade das análises, e executa o mesmo workflow em diferentes infraestruturas. Essas características o tornam especialmente adequado para a construção de pipelines metagenômicos padronizados, portáteis e de fácil compartilhamento entre laboratórios. O MetaSentinel é dividido em cinco estágios:
+        <h3>Controle de qualidade, trimagem e filtragem dos dados</h3>
+        <p style="text-align:justify;">
+          No primeiro estágio do pipeline se inicia a avaliação da qualidade dos dados brutos de sequenciamento utilizando o <strong>NanoPlot</strong>. Em seguida, os arquivos são submetidos a um tratamento com o <strong>Chopper</strong> em que são removidos adaptadores nas extremidades iniciais das sequências e uma etapa de filtragem ocorre baseando-se em critérios de qualidade e comprimento mínimo. Após esta etapa, a qualidade dos dados tratados é reavaliada com o NanoPlot e os resultados são consolidados em um relatório utilizando o <strong>MultiQC</strong>.  
+        </p>
+        <h3>Classificação taxonômica</h3>
+        <p style="text-align:justify;">
+          O segundo estágio recebe as sequências filtradas e realiza a classificação taxonômica. O <strong>Kraken2</strong> fragmenta cada sequência tratada em segmentos menores de tamanho fixo, os k-mers, e consulta cada fragmento em um banco de dados que associa os k-mers a táxons. Havendo correspondência, o Kraken2 atribui a sequência ao táxon mais específico compatível com os k-mers encontrados. Quando os k-mers apontam para mais de um táxon, a sequência é atribuída ao ancestral comum mais próximo. <br>
+          Após a identificação dos organismos presentes na amostra, os relatórios gerados pelo Kraken2 são enviados a um script em R, que estima a proporção de cada organismo identificado e gera um gráfico com os 20 mais abundantes. <br>
+          As etapas de classificação taxonômica e de quantificação são feitas diretamente nas reads, portanto não dependem da montagem de contigs.
+        </p>
+        <h3>Montagem de novo</h3>
+        <p style="text-align:justify;">
+          No terceiro estágio, é utilizado o software <strong>Flye</strong>, que reúne em contigs as sequências previamente tratadas pelo Chopper. A montagem é feita individualmente para cada amostra: o Flye identifica as sobreposições entre as reads e, a partir da união delas, constrói sequências maiores e contíguas, os contigs. O resultado desta etapa é um arquivo contendo sequências longas e lineares, o que possibilita a anotação de genes com maior precisão, a quantificação por sequência montada e a localização de genes de resistência. <br>
+          Os arquivos gerados nesta etapa servem de base para os estágios seguintes do workflow.
+        </p>
+        <h3>Anotação</h3>
+        <p style="text-align:justify;">
+          No quarto estágio, os contigs gerados pelo Flye são submetidos à anotação funcional e à busca por genes de resistência, por meio dos softwares <strong>DIAMOND</strong> e <strong>AMRFinderPlus</strong>. O DIAMOND é um alinhador de sequências proteicas de alto desempenho: ele traduz os contigs nos seis quadros de leitura possíveis e alinha as sequências traduzidas contra o banco de proteínas UniProt. Os alinhamentos significativos são associados ao banco de taxonomia do NCBI, o que permite atribuir a cada contig uma função provável e um táxon de origem. <br> 
+          Em paralelo, o AMRFinderPlus compara os contigs com o banco curado de genes de resistência antimicrobiana do NCBI, identificando genes associados à resistência a antimicrobianos e indicando a identidade, a cobertura e a classe de resistência de cada detecção. <br>
+          Como resultado, esta etapa gera uma tabela de alinhamentos do DIAMOND, com a função e a taxonomia atribuídas, por meio de um número identificador, a cada contig, e uma tabela do AMRFinderPlus, com os genes de resistência detectados. Esses arquivos fornecem a identificação dos contigs usada na etapa seguinte, de quantificação da abundância, e permitem relacionar cada gene de resistência ao organismo de origem.
+        </p>
+        <h3>Quantificação</h3>
+        <p style="text-align:justify;">
+          No último estágio, estima-se a abundância relativa de cada contig nas amostras. As reads tratadas são mapeadas nos contigs montados pelo Flye com o <strong>Minimap2</strong>, e os alinhamentos resultantes são usados pelo <strong>Salmon</strong> para quantificar cada sequência. O Salmon estima a abundância em TPM (<i>transcripts per million</i>), uma medida que normaliza a contagem de reads pelo comprimento do contig e pela profundidade total de sequenciamento da amostra. Isso permite comparar contigs de tamanhos diferentes e amostras com números distintos de reads. Em seguida, um script feito em linguagem R integra os valores de TPM às anotações do DIAMOND, de modo que cada contig quantificado seja associado à função e ao táxon atribuídos na etapa anterior. <br>
+          Como resultado, o estágio gera um gráfico com os 20 contigs de maior TPM por amostra, ordenados do menor para o maior valor, com a anotação correspondente. Assim, é possível identificar quais organismos e funções predominam em cada amostra, complementando a visão taxonômica obtida diretamente das reads no segundo estágio.  
+        </p>  
+          <img src="./metasentinel_metromap.svg" 
+          alt="Visão geral sobre o workflow MetaSentinel."
+          style="width: 100%; height: auto;">
+      </section>
+
+      <section class="lesson-section" id="preparo_ambiente_trabalho">
+        <h1>2. Instalação e criação do ambiente de trabalho</h1>
+        <p style="text-align: justify;">O <black>Conda</black> é um gerenciador de pacotes e ambientes virtuais que permite instalar e organizar as dependências necessárias para executar diferentes ferramentas de bioinformática. A criação de ambientes isolados garante que cada ferramenta e suas respectivas versões sejam compatíveis entre si, evitando conflitos de dependências e tornando a execução do pipeline reprodutível. </p>
+        <h2 id="preparo_ambiente_trabalho_conda">2.1 Instalação do Conda</h2>
+        <p>Caso o Conda ainda não tenha sido instalado, faça o download pela linha de comando.</p>
+        <pre><code>wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh</code></pre>
+        <p>Execute o arquivo de instalação do Conda: </p>
+        <pre><code>bash Miniconda3-latest-Linux-x86_64.sh</code></pre>
+        <h2 id="preparo_ambiente_trabalho_nextflow">2.2 Criação do ambiente e instalação do Nextflow</h2>
+        <p>Crie um ambiente Conda instalando o Nextflow.</p>
+        <pre><code>conda create -n nextflow_env -c bioconda nextflow</code></pre>
+        <p>Ative o ambiente:</p>
+        <pre><code>conda activate nextflow_env</code></pre>
+        <p>Verifique a instalação do Nextflow</p>
+        <pre><code>nextflow -version</code></pre>
+        <h1 id="preparo_ambiente_trabalho_metasentinel">2.3 Download do MetaSentinel</h1>
+        <p>Faça o download do pipeline diretamente da página oficial do GitHub: </p>
+        <pre><code>git clone https://github.com/lmrtome/MetaSentinel.git</code></pre>
+        <pre><code>cd MetaSentinel</code></pre>
+        <div class="callout warning">
+          <strong>Requisitos do sistema</strong>
+          <ul>
+          <li>Linux (recomendado)</li>
+          <li>Conda (Miniconda)</li>
+          <li>Nextflow ≥ 24.x </li>
+          <li>Conexão com internet para instalação das dependências, do pipeline e do banco de dados e para a primeira execução</li>
+          <li>Espaço no armazenamento para os bancos de dados, os resultados e os dados brutos</li>
+        </ul>
+        </div>
+        <br>
+        <h1 id="preparo_ambiente_trabalho_estrutura">2.4 Estrutura e organização do diretório MetaSentinel</h1>
+
+        <p style="text-align: justify;">
+          Um projeto desenvolvido em Nextflow pode ser organizado em diferentes
+          arquivos e diretórios. É uma boa prática separar as configurações gerais,
+          os processos individuais e os subworkflows que compõem o pipeline.
+          Essa modularização facilita a manutenção, a reutilização de etapas
+          e a expansão do workflow.
+        </p>
+
+        <h2>Organização dos diretórios e arquivos</h2>
+
+        <p>
+          A estrutura do MetaSentinel, desenvolvido em Nextflow DSL2, é organizada da seguinte maneira:
+        </p>
+
+        <pre><code>
+        metasentinel/
+        ├── main.nf
+        ├── nextflow.config
+        ├── subworkflows/ 
+        │   ├── qc
+        │   │   └── main.nf
+        │   ├── taxonomy
+        │   │   └── main.nf
+        │   ...
+        ├── modules/
+        │   ├── chopper
+        │   │   ├── environment.yml
+        │   │   └── main.nf
+        │   ...
+        ├── workflows/
+        │   └── metasentinel.nf
+        ├── bin/
+        │   ├── plot_abundance.R
+        │   └── plot_kraken2_top20.R
+        ├── README.md 
+        ├── CITATIONS.md
+        └── assets   
+            └── logo.png
+        </code></pre>
+        <details>
+          <summary>Entenda a função de cada arquivo e diretório</summary>
+          <ul>
+            <li>
+              <strong>main.nf:</strong> arquivo principal responsável por
+              receber os arquivos de entrada e emitir os resultados em um diretório.
+            </li>
+            <li>
+              <strong>nextflow.config:</strong> arquivo de configuração
+              geral, utilizado para definir parâmetros, diretivas de execução,
+              recursos computacionais e opções de gerenciamento de ambientes.
+            </li>
+            <li>
+              <strong>modules/:</strong> diretório que armazena os módulos
+              individuais, cada módulo é nomeado de acordo com a ferramenta e contém um diretório com dois arquivos: 
+              <ul>
+              <li>
+                <strong>environment.yml:</strong> arquivo de configuração do Conda que descreve as dependências necessárias para a execução de uma ferramenta e para a criação do ambiente.
+              </li>
+              <li>
+                <strong>main.nf:</strong> arquivo de execução da ferramenta, chamada <strong>process</strong>.
+              </li>
+              </ul>
+            </li>
+            <li>
+              <strong>subworkflows/:</strong> diretório que reúne processos
+              relacionados em etapas maiores e organizadas do pipeline.
+            </li>
+            <li>
+              <strong>bin/:</strong> diretório destinado a scripts auxiliares desenvolvidos em linguagem R utilizados durante as análises.
+            </li>
+            <li>
+              <strong>workflow/:</strong> diretório contendo o arquivo metasentinel.nf contendo a lógica de programação e o fluxo de entrada dos arquivos e saída dos resultados dentro do pipeline. Este arquivo contém chamadas aos subworkflows e organiza a ordem de execução dos arquivos.
+            </li>
+          </ul>
+        </details>
+        <div class="callout info">
+          <strong>Importante:</strong>
+          Para mais informações sobre a modularização de um projeto desenvolvido em Nextflow, confira a documentação oficial nas referências.
+        </div>
+
+        <h2>Arquivo de configuração nextflow.config</h2>
+        <p style="text-align: justify;">
+          O arquivo <strong>nextflow.config</strong> centraliza as
+          configurações gerais do projeto. Nele, podemos definir parâmetros
+          de entrada que serão adicionados pela linha de comando, o diretório de saída, recursos computacionais e
+          configurações relacionadas ao gerenciamento de ambientes Conda.
+        </p>
+
+        <p>Estrutura do nextflow.config:</p>
+
+        <pre><code>
+        params {
+            /* Input settings */
+
+            input = null
+
+            /* Quality control settings */
+
+            threads    = 4
+            headcrop   = 30
+            phredscore = 10
+            minlen     = 100
+
+            /* Database settings */
+
+            database_kraken2   = null
+            database_diamond   = null
+            database_amrfinder = null
+            taxa_names         = null
+
+            /* Assembly settings */
+
+            run_assembly = false
+          }
+
+            /* Output settings */
+
+            outputDir            = "./MetaSentinel_results"
+            workflow.output.mode = 'copy'
+    
+            /* Conda settings */
+
+            conda.enabled  = true
+            conda.channels = ['conda-forge','bioconda']
+       </code></pre>
+
+      <details>
+          <summary>Entenda os parâmetros e configurações</summary>
+
+          <p style="text-align: justify;"><strong>Bloco params:</strong> define parâmetros que podem ser
+          utilizados em diferentes partes do pipeline.
+
+          <ul>
+            <li>
+              <strong>input:</strong> define o caminho dos arquivos de entrada.
+              Por padrão, é um parâmetro vazio e o Nextflow considera somente arquivos FASTQ compactados presentes no diretório de entrada.
+            </li>
+            <li>
+              <strong>Quality control settings:</strong> este bloco corresponde aos parâmetros utilizados para o tratamento das sequências brutas. Por padrão, assumem os valores definidos no arquivo de configuração e podem ser alterados quando novos valores são passados pela linha de comando.
+            </li>
+            <li>
+              <strong>Database settings:</strong> este bloco corresponde aos caminhos para os bancos de dados utilizados pelo pipeline. Durante a execução da abordagem amplicon, somente o banco de dados Kraken2 deve ser inserido. Na abordagem shotgun, é necessário inserir todos os bancos.
+              Por padrão, é um parâmetro vazio e é mandatório indicar o caminho para o banco de dados para que haja a execução completa do pipeline. 
+            </li>
+            <li>
+              <strong>run_assembly:</strong> define a execução do bloco correspondente a abordagem de shotgun. Por padrão, o bloco é desativado e sua ativação é feita pela linha de comando.
+            </li>
+          </ul>
+
+          <p style="text-align: justify;"><strong>Configurações adicionais:</strong></p>
+
+          <ul>
+            <li>
+              <strong>outputDir:</strong> define o diretório de trabalho
+              no qual o Nextflow armazena os resultados do pipeline.
+            </li>
+            <li>
+              <strong>conda.enabled = true:</strong> habilita a integração
+              com Conda, permitindo que o Nextflow crie e gerencie
+              automaticamente os ambientes associados aos processos.
+            </li>
+            <li>
+              <strong>conda.channels:</strong> define os repositórios que serão consultados para localizar e instalar as ferramentas e suas dependências.
+            </li>
+            
+          </ul>
+
+          <p style="text-align: justify;">
+            Os valores apresentados podem ser ajustados conforme os recursos disponíveis no computador ou servidor pela linha de comando.
+          </p>
+        </details>
+
+        <p>
+          Os parâmetros podem ser modificados diretamente
+          durante a execução do pipeline, utilizando a opção
+          <strong>--</strong> seguida do nome do parâmetro.
+        </p>
+
+        <pre><code>
+        nextflow run main.nf 
+          --input './dados/' 
+          --outdir './resultados'
+        </code></pre>
+
+      <details>
+          <summary>Entenda a passagem de parâmetros</summary>
+          <p style="text-align: justify;">
+            A opção <strong>--input</strong> permite substituir o caminho
+            padrão dos arquivos de entrada definido em nextflow.config.
+            Da mesma forma, <strong>--outdir</strong> modifica o diretório
+            de saída. 
+            <br>
+            Essa funcionalidade permite executar o mesmo pipeline com
+            diferentes conjuntos de dados sem precisar modificar
+            o código-fonte.
+          </p>
+        </details>
+
+        <h2>Modularização: processos e subworkflows</h2>
+
+        <p>
+          A modularização consiste em dividir o pipeline em unidades menores,
+          responsáveis por tarefas específicas. No Nextflow DSL2, podemos
+          organizar essas unidades utilizando <strong>processos</strong>
+          e <strong>subworkflows</strong>.
+        </p>
+
+        <p style="text-align: justify;">
+          Os processos representam as etapas individuais de execução,
+          são associadas a ferramentas específicas. Já os subworkflows
+          agrupam diferentes processos relacionados, organizando-os em etapas
+          maiores de análise e aplicando um fluxo entre eles. A saída de um processo é conectada a entrada de outro processo por canais, são através deles que os arquivos seguem pelo workflow. 
+        </p>
+
+        <h3>Módulos: definição dos processos</h3>
+
+        <p style="text-align: justify;">
+          Cada módulo pode conter um processo responsável por executar
+          determinada ferramenta. Por exemplo, o arquivo
+          <strong>modules/chopper/main.nf</strong> contém:
+        </p>
+
+        <pre><code>
+         process TRIM_READS {
+    
+            tag "${sample_id}"
+
+            conda "${moduleDir}/environment.yml"
+
+            input:
+            tuple val(sample_id), path(long_reads)
+
+            output:
+            tuple val(sample_id), path("trimmed_${sample_id}.fastq.gz"), emit: trimmed_reads
+
+            script:
+            """
+            gunzip -c ${long_reads} | chopper --trim-approach fixed-crop --headcrop ${params.headcrop} -q ${params.phredscore} -l ${params.minlen} --threads ${params.threads} | gzip > trimmed_${sample_id}.fastq.gz
+            """
+        }
+        </code></pre>
+
+        <details>
+          <summary>Entenda a estrutura do processo</summary>
+          <ul>
+            <li>
+              <strong>process TRIM_READS:</strong> define o nome do processo.
+            </li>
+            <li>
+              <strong>tag "${sample_id}":</strong>
+            </li>
+            <li>
+              <strong>conda "${moduleDir}/environment.yml"</strong> associa o processo ao arquivo
+              environment.yml que contém suas dependências.
+            </li>
+            <li>
+              <strong>input:</strong> especifica os dados recebidos pelo
+              processo. Neste caso, um conjunto de dados (tupla) que insere no processo o nome da amostra e o caminho para o arquivo de sequenciamento.
+            </li>
+            <li>
+              <strong>output:</strong> declara o diretório gerado pelo
+              processo, permitindo que ele seja disponibilizado para
+              outras etapas do pipeline.
+            </li>
+            <li>
+              <strong>script:</strong> contém o comando executado pelo Nextflow. Neste exemplo, Chopper realiza a trimagem e a filtragem dos dados. 
+            </li>
+          </ul>
+          <p style="text-align: justify;">
+            O processo é definido em um arquivo independente e poderá ser importado e utilizado em diferentes partes do projeto. Cada processo contém seu próprio script, seus parâmetros e um caminho específico para a criação de um ambiente pelo Conda.
+          </p>
+        </details>
+
+        <h3>Subworkflows: agrupamento dos processos</h3>
+
+        <p style="text-align: justify;">
+          Os subworkflows permitem agrupar processos que executam atividades relacionadas. Dessa maneira, podemos organizar o pipeline em grandes etapas, como controle de qualidade, classificação taxonômica, anotação, montagem metagenômica e abundância.
+        </p>
+
+        <p style="text-align: justify;">
+          Por exemplo, o arquivo <strong>subworkflows/qc/main.nf</strong> reúne os processos de filtragem, avaliação da qualidade e união das avaliações em um único relatório gerado pelo MultiQC:
+        </p>
+
+        <pre><code>
+        /*
+        --------------
+        Import modules
+        --------------
+        */
+
+        include {QC_RAW_READS}        from '../../modules/nanoplot/qc_raw/main.nf'
+        include {TRIM_READS}          from '../../modules/chopper/main.nf'
+        include {QC_TRIMMED_READS}    from '../../modules/nanoplot/qc_trimmed_reads/main.nf'
+        include {MULTIQC_REPORT}      from '../../modules/multiqc/main.nf'
+
+        workflow QC { 
+
+        take: 
+
+        reads
+
+        main:
+            
+        /*
+        ------------------------------
+        Quality check step of raw data
+        ------------------------------
+        */
+
+        QC_RAW_READS (reads)
+
+        ...
+        
+        emit: 
+
+        qc_raw         = QC_RAW_READS.out.qc_raw_reads
+        ...
+
+        }
+        </code></pre>
+
+        <details>
+          <summary>Entenda a estrutura do subworkflow</summary>
+          <ul>
+            <li>
+              <strong>include:</strong> importa todos os processos
+              definidos no diretório externo (modules), permitindo sua utilização
+              dentro do subworkflow.
+            </li>
+            <li>
+              <strong>workflow QC (Quality Control):</strong> define
+              o nome do subworkflow responsável pela etapa de controle
+              de qualidade.
+            </li>
+            <li>
+              <strong>take:</strong> declara os canais de entrada
+              recebidos pelo subworkflow. Neste exemplo, o canal
+              reads contém os arquivos brutos de sequenciamento.
+            </li>
+            <li>
+              <strong>main:</strong> contém a lógica de execução,
+              indicando quais processos serão executados e como
+              seus dados serão conectados.
+            </li>
+            <li>
+              <strong>emit:</strong> disponibiliza os resultados
+              produzidos pelo subworkflow para outras etapas
+              do pipeline.
+            </li>
+          </ul>
+          <p>
+            Assim, o subworkflow funciona como uma unidade organizada
+            de análise, que pode ser chamada pelo arquivo principal
+            ou reutilizada em outros projetos.
+          </p>
+        </details>
+        <div class="callout info">
+          <strong>Importante:</strong>
+          Para visualizar o script de cada processo e o bloco <code>main</code> em cada subworkflow, use:
+          <pre><code>
+            cat /modules/nome-da-ferramenta/main.nf
+          </code></pre>
+          <pre><code>
+            cat /subworkflow/nome-do-subworkflow/main.nf
+          </code></pre>
+        </div>
+
+        <h3>Integração dos subworkflows no arquivo principal</h3>
+
+        <p style="text-align: justify;">
+          O diretório workflow contém um único arquivo nomeado como <strong>metasentinel.nf</strong>. Este arquivo funciona como ponto central de integração do projeto. Nele, são importados módulos e os subworkflows que são conectados, estabelecendo a lógica do workflow e a sequência de execução do pipeline.
+        </p>
+
+        <p>Visualização do arquivo metasentinel.nf:</p>
+
+        <pre><code>
+        include {QC}              from '../subworkflows/qc/main.nf'
+        include {TAXONOMY}        from '../subworkflows/taxonomy/main.nf'
+        include {DENOVO_ASSEMBLY} from '../modules/flye/main.nf'
+        ...
+
+        workflow METASENTINEL {
+    
+        take:
+
+        raw_reads_data
+
+        main:
+
+        ...
+
+        }
+
+        emit:
+
+        {
+        qc_raw_data_output      = QC.out.qc_raw
+        taxonomy_reports        = TAXONOMY.out.taxonomy_reports
+        ...
+        }
+
+        </code></pre>
+
+        <details>
+          <summary>Entenda como ocorre a integração</summary>
+          <ul>
+            <li>
+              <strong>include:</strong> importa todos os subworkflows e processos que serão utilizados no arquivo principal.
+            </li>
+            <li>
+              <strong>main:</strong> define a lógica do pipeline e a sequência de execução dos subworkflows e processos, encaminhando os arquivos através de canais.
+            </li>
+            <li>
+              <strong>emit:</strong> disponibiliza os resultados
+              produzidos pelo workflow para outras etapas do pipeline.
+            </li>
+          </ul>
+          <p style="text-align: justify;">
+            Em grandes projetos, o arquivo principal pode importar
+            vários subworkflows e processos, conectando os resultados de uma etapa às entradas da etapa seguinte.
+          </p>
+        </details>
+
+        <h3>Arquivo de execução principal</h3>
+        <p style="text-align: justify;">
+          O arquivo de execução principal é localizado e utilizado pelo Nextflow durante a execução do pipeline pela linha de comando. O arquivo main.nf é responsável por receber os arquivos de entrada e emitir os resultados de cada processo em diretórios específicos. Para isso, ele importa o arquivo <strong>workflow/metasentinel.nf</strong> contendo a lógica do pipeline. <br>
+          Embora sua estrutura seja semelhante ao arquivo main.nf do workflow, no arquivo principal não há lógica de execução entre os processos e subworkflows, apenas a entrada e saída de dados.
+        </p>
+
+        <h3>Dinâmica de execução do pipeline</h3>
+
+        <p style="text-align: justify;">
+          Durante a execução, o Nextflow utiliza o arquivo principal
+          para identificar os subworkflows e processos que devem ser
+          executados. Os canais transportam os dados entre essas etapas,
+          enquanto os módulos definem as operações realizadas sobre
+          os arquivos.
+        </p>
+
+         <pre><code>
+                 
+          include {METASENTINEL} from './workflows/metasentinel.nf'
+          
+          workflow { 
+              main: 
+          
+              long_reads = channel.fromPath("${params.input}/*.fastq.gz")
+                                  .map { file -> def sample_id = file.baseName.replaceFirst(/\.f(ast)?q(\.gz)?$/, '') 
+                                  tuple(sample_id, file)}
+           
+              METASENTINEL(long_reads)
+          
+              publish:
+          
+                  qc_raw_data       = METASENTINEL.out.qc_raw_data_output
+                  trimmed_data      = METASENTINEL.out.trimmed_data_output
+                  qc_trimmed_data   = METASENTINEL.out.qc_trimmed_data_output
+                  multiqc_qc        = METASENTINEL.out.multiqc_report
+                  taxonomic_reports = METASENTINEL.out.taxonomy_reports
+                  ...
+          }
+              
+          output {
+              
+              qc_raw_data {
+                  path { sample_id, _file -> "qc/${sample_id}/raw/" }
+              }
+          
+              trimmed_data {
+                  path { sample_id, _file -> "trimmed/${sample_id}" }
+              }
+          
+              ...
+          }
+                     
+        </code></pre>
+        
+        <details>
+          <summary>Entenda o arquivo principal main.nf</summary>
+         <ul>
+            <li>
+              <strong>include:</strong> importa o workflow contendo toda a lógica de execução do metasentinel.
+            </li>
+            <li>
+              <strong>workflow main:</strong> define o corpo do arquivo, é o bloco em que serão introduzidos os arquivos de sequenciamento e a execução sobre estes arquivos.
+            </li>
+            <li>
+              <strong>publish:</strong> disponibiliza os resultados
+              produzidos pelo workflow em diretórios específicos de cada etapa.
+            </li>
+            <li>
+              <strong>output:</strong> disponibiliza os resultados
+              produzidos pelo workflow em diretórios nomeados com a identificação de cada amostra.
+            </li>
+          </ul>
+        </details>
+
+        <div class="callout info">
+          <strong>Importante:</strong>
+          A modularização não significa que todos os processos precisam
+          ser executados em sequência. O Nextflow gerencia a execução
+          de acordo com as dependências entre os canais. Processos
+          independentes podem ser executados em paralelo, conforme
+          os recursos disponíveis.
+        </div>
+
+        <h1>Criação de ambientes Conda pelo Nextflow</h1>
+        <p style="text-align: justify;">
+          Na primeira execução do pipeline, o Nextflow identifica os ambientes Conda definidos nos arquivos environment.yml de cada módulo e, a partir das dependências e dos canais especificados, realiza automaticamente a resolução, o download e a instalação dos pacotes necessários, construindo os ambientes correspondentes. Esses ambientes são armazenados em um diretório de cache (conda.cacheDir), permitindo que sejam reutilizados em execuções posteriores, sem a necessidade de recriar ou reinstalar as ferramentas a cada nova análise. Dessa forma, desde que as dependências permaneçam inalteradas e o ambiente esteja disponível no diretório de cache, o Nextflow simplesmente ativa o ambiente já construído quando o processo correspondente é executado, tornando as análises subsequentes mais rápidas e eficientes.
+        </p>
+      </section>
+
+      <section class="lesson-section" id="banco_de_dados">
+        <h1>3. Criação dos bancos de dados</h1>
+        <p>Ao longo do pipeline, são utilizados três bancos de dados em cada módulo específico.</p>
+        <h2 id="banco_de_dados_kraken2">Criação do banco de dados Kraken2</h2>
+        <p>Crie um ambiente conda com a ferramenta Kraken2.</p>
+        <pre><code>conda create -n kraken2_env -c bioconda kraken2</code></pre>
+        <p>Ative o ambiente:</p>
+        <pre><code>conda activate kraken2_env</code></pre>
+        <hr>
+        <h2 id="banco_de_dados_diamond">Criação do banco de dados DIAMOND</h2>
+        <p>Crie um ambiente Conda com a ferramenta DIAMOND.</p>
+        <pre><code>conda create -n diamond_env -c bioconda diamond=2.2.2</code></pre>
+        <p>Ative o ambiente:</p>
+        <pre><code>conda activate diamond_env</code></pre>
+        <pre><code>wget https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz </code></pre>
+        <pre><code>gunzip uniprot_sprot.fasta.gz</code></pre>
+        <details>
+          <summary>Entenda os comandos em detalhes</summary>
+          <p>O comando <code>wget</code> realiza o download do arquivo diretamente de um endereço na internet. <br>
+          O arquivo baixado <strong>uniprot_sprot.fasta.gz</strong> contém as sequências proteicas da base UniProt/Swiss-prot em formato Fasta, compactadas com gzip. É este arquivo que será utilizado como entrada para a construção do banco de dados do DIAMOND.</p> <br>
+          O comando <code>gunzip</code> descompacta o arquivo no formato gzip extraindo conteúdo contendo as sequências em formato Fasta.
+        </details>
+        <pre><code>wget https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz</code></pre>
+        <pre><code>tar -xzf taxdump.tar.gz</code></pre>
+        <details>
+          <summary>Entenda os comandos em detalhes</summary>
+          <p>Esse comando realiza o download do arquivo
+          <strong>taxdump.tar.gz</strong>, disponibilizado pelo NCBI.
+          Ele contém os arquivos de referência da taxonomia dos organismos,
+          incluindo informações sobre a hierarquia taxonômica e os nomes
+          científicos dos táxons. Esses dados serão utilizados pelo DIAMOND
+          para associar as sequências proteicas aos respectivos táxons.<br>
+          O comando <code>tar</code> permite extrair arquivos compactados.
+          Os parâmetros utilizados possuem as seguintes funções:
+          <ul>
+            <li><code><strong>-x:</strong></code> extrai o conteúdo do arquivo.</li>
+            <li><code><strong>-z:</strong></code> indica que o arquivo está compactado com gzip.</li>
+            <li><code><strong>-f:</strong></code> especifica o arquivo que será extraído.</li>
+          </ul>
+          <p>
+            A extração disponibiliza diversos arquivos de taxonomia, entre eles
+            <strong>nodes.dmp</strong>, que descreve as relações hierárquicas
+            entre os táxons, e <strong>names.dmp</strong>, que contém os nomes
+            associados aos identificadores taxonômicos.
+          </p>
+        </details>
+        <pre><code>wget https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz</code></pre>
+        <details>
+          <summary>Entenda o comando em detalhes</summary>
+          <p>Esse comando realiza o download do arquivo
+          <strong>prot.accession2taxid.gz</strong>, disponibilizado pelo NCBI.
+          Ele contém uma tabela que relaciona os identificadores de acesso
+          das sequências proteicas aos seus respectivos identificadores
+          taxonômicos (TaxID). Essa associação permite que o DIAMOND relacione
+          os resultados de similaridade proteica à classificação taxonômica
+          dos organismos de origem.
+          </p>
+        </details>
+        <p>Construa o banco de dados DIAMOND.</p>
+        <pre><code>diamond makedb --in uniprot_sprot.fasta.gz
+              --db diamond_database 
+              --taxonmap prot.accession2taxid.gz
+              --taxonnodes nodes.dmp
+              --taxonnames names.dmp</code></pre>
+        <details>
+          <summary>Entenda o comando em detalhes</summary>
+          <p>
+            O comando <code>diamond makedb</code> constrói um banco de dados
+            a partir das sequências proteicas fornecidas. Os parâmetros utilizados
+            são:
+          
+          <ul>
+            <li>
+              <code>--in:</code> especifica o arquivo FASTA que contém
+              as sequências proteicas utilizadas na construção do banco.
+            </li>
+            <li>
+              <code>--db:</code> define o nome do banco de dados que será
+              gerado. Neste exemplo, o banco será denominado
+              <strong>diamond_database</strong>.
+            </li>
+            <li>
+              <code>--taxonmap:</code> fornece o arquivo que relaciona
+              os identificadores das sequências proteicas aos respectivos TaxIDs.
+            </li>
+            <li>
+              <code>--taxonnodes:</code> fornece o arquivo
+              <strong>nodes.dmp</strong>, que contém a estrutura hierárquica
+              da taxonomia.
+            </li>
+            <li>
+              <code>--taxonnames:</code> fornece o arquivo
+              <strong>names.dmp</strong>, que contém os nomes dos organismos
+              associados aos seus identificadores taxonômicos.
+            </li>
+          </ul>
+            Ao final, será gerado um banco de dados DIAMOND com informações
+            de sequências proteicas e associações taxonômicas, que poderá
+            ser utilizado posteriormente para realizar buscas de similaridade
+            e análises taxonômicas.
+          </p>
+        </details>
+        <hr>
+        <h2 id="banco_de_dados_amrfinder">Criação do banco de dados AMRFinder.</h2>
+        <p>Crie um ambiente Conda com a ferramente AMRFinder</p>
+        <pre><code>conda create -n amrfinder_env -c bioconda ncbi-amrfinderplus</code></pre>
+        <p>Ative o ambiente:</p>
+        <pre><code>conda activate amrfinder_env</code></pre>
+        <p>Utilize o comando para construir o banco de dados.</p>
+        <pre><code>amrfinder_update -d ~/database/amrfinderplus</code></pre>
+        <pre><code>amrfinder --database_version</code></pre>
+         <details>
+          <summary>Entenda os comandos em detalhes</summary>
+          <p>
+          O comando <code>amrfinder_update</code> realiza o download
+          e a atualização do banco de dados utilizado pelo AMRFinderPlus.
+          O parâmetro:
+          <ul>
+            <li>
+              <code>-d:</code> especifica o diretório no qual os arquivos
+              do banco de dados serão armazenados.
+            </li>
+          </ul>
+          Neste exemplo, o banco será armazenado no diretório
+          <strong>~/database/amrfinderplus</strong>. O símbolo
+          <strong>~</strong> representa o diretório pessoal do usuário
+          (home) no Linux.
+          Essa etapa é necessária para disponibilizar as referências
+          utilizadas na identificação de genes associados à resistência
+          antimicrobiana e outros determinantes contemplados pela ferramenta.
+          <p>
+            O comando <code>amrfinder --database_version</code> exibe
+            a versão do banco de dados do AMRFinderPlus disponível para
+            utilização. Essa informação permite verificar se a atualização
+            foi realizada e registrar a versão utilizada nas análises.
+          </p>
+        </details>
+      </section>
+
+      <section class="lesson-section" id="amplicon">
+        <h1>4. Execução do pipeline - Abordagem Amplicon</h1>
+        <h3>Comando utilizado</h3>
+        <pre><code>nextflow run main.nf 
+    --input /caminho_para_diretório/dados_de_sequenciamento/
+    --threads 10 
+    --headcrop 30 
+    --phredscore 10 
+    --minlen 100 
+    --database_kraken2 /caminho_para_diretório/banco_de_dados_kraken2 
+    -output-dir /caminho_para_diretório/resultados</code></pre>
+        <h3>Parâmetros principais</h3>
+        <table>
+          <thead><tr><th>Parâmetro</th><th>Função</th><th>Padrão</th></tr></thead>
+          <tbody>
+            <tr><td><code>--input</code></td><td>Diretório contendo arquivos de sequenciamento compactados</td><td>Exigido</td></tr>
+            <tr><td><code>-output-dir</code></td><td>Diretório de saída e armazenamento dos resultados das análises</td><td>MetaSentinel_results</td></tr>
+            <tr><td><code>--threads</code></td><td>Número de threads utilizadas pelo CPU</td><td>Função</td></tr>
+            <tr><td><code>--minlen</code></td><td>Tamanho mínimo mantido após a filtragem</td><td>100</td></tr>
+            <tr><td><code>--phredscore</code></td><td>Qualidade Phredscore mínimo mantido após a filtragem</td><td>10</td></tr>
+            <tr><td><code>--headcrop</code></td><td>Número de bases removidas do início de cada sequência</td><td>30</td></tr>
+            <tr><td><code>--database_kraken2</td><td>Caminho para o diretório contendo o banco de dados Kraken2</td><td>Exigido</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="lesson-section" id="shotgun">
+        <h1>5. Execução do pipeline - Abordagem Shotgun</h1>
+        <h3>Comando utilizado</h3>
+        <pre><code>nextflow run main.nf \
+    --run_assembly true 
+    --input /home/user/reads 
+    --threads 10 
+    --headcrop 30 
+    --phredscore 10 
+    --minlen 100 
+    --database_kraken2 /caminho_para_diretório/banco_de_dados_kraken2/
+    --database_diamond /caminho_para_diretório/banco_de_dados_diamond/uniprot_sprot_tax.dmnd 
+    --taxa_names /caminho_para_diretório/banco_de_dados_diamond/names.dmp 
+    --database_amrfinder /caminho_para_diretório/banco_de_dados_amrfinder/latest 
+    --read_type nano-hq 
+    -output-dir /caminho_para_diretório/resultados</code></pre>
+        <h3>Parâmetros principais</h3>
+        <table>
+          <thead><tr><th>Parâmetro</th><th>Função</th><th>Padrão</th></tr></thead>
+          <tbody>
+             <tr><td><code>--input</code></td><td>Diretório contendo arquivos de sequenciamento compactados</td><td>Exigido</td></tr>
+            <tr><td><code>-output-dir</code></td><td>Diretório de saída e armazenamento dos resultados das análises</td><td>MetaSentinel_results</td></tr>
+            <tr><td><code>--threads</code></td><td>Número de threads utilizadas pelo CPU</td><td>Função</td></tr>
+            <tr><td><code>--minlen</code></td><td>Tamanho mínimo mantido após a filtragem</td><td>100</td></tr>
+            <tr><td><code>--phredscore</code></td><td>Qualidade Phredscore mínimo mantido após a filtragem</td><td>10</td></tr>
+            <tr><td><code>--headcrop</code></td><td>Número de bases removidas do início de cada sequência</td><td>30</td></tr>
+            <tr><td><code>--database_kraken2</td><td>Caminho para o diretório contendo o banco de dados Kraken2</td><td>Exigido</td></tr>
+            <tr><td><code>--database_diamond</td><td>Caminho para o diretório contendo o banco de dados formatado DIAMOND (.dmnd)</td><td>Assembly workflow</td></tr>
+            <tr><td><code>--taxa_names</td><td>Caminho para o arquivo de taxonomia do NCBI <code>names.dmp</code> usado para anotação</td><td>Assembly workflow</td></tr>
+            <tr><td><code>--database_amrfinder</td><td>Caminho para o diretório contendo o banco de dados AMRFinder</td><td>Assembly workflow</td></tr>
+            <tr><td><code>--read_type<td>Tipo de leitura do Flye (<code>nano-corr</code>, <code>nano-raw</code>, <code>nano-hq</code>)</td><td><code>nano-hq</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="lesson-section" id="resultados">
+        <h1>6. Resultados do Pipeline</h1>
+        <p style="text-align: justify;">
+          Ao fim da execução do pipeline, é emitido um diretório de resultados contendo todos os arquivos produzidos pelos processos. Este diretório pode ser nomeado com o parâmetro <code>-output-dir</code> durante a execução ou, por padrão, será <strong>MetaSentinel_results</strong>. <br>
+          <pre><code>
+
+            MetaSentinel_results/
+            ├── abundance/          
+            ├── abundance_output/   
+            ├── amrfinder/          
+            ├── annotation/         
+            ├── assembly/           
+            ├── mapping/            
+            ├── multiqc_report/     
+            ├── qc/                 
+            ├── taxonomy/           
+            └── trimmed/            
+
+          </code></pre>
+        </p>
+      
+      </section>
+
+      <section class="lesson-section" id="exercicios">
+        <h2>Exercícios e questões para discussão</h2>
+      
+      </section>
+
+      <section class="lesson-section" id="objetivos">
+        <h2>Objetivos de aprendizagem</h2>
+        <p>Ao final desta aula, espera-se que você seja capaz de:</p>
+       
+      </section>
+
+      <section class="lesson-section" id="amostra">
+        <h2>Amostra selecionada para a execução do workflow</h2>
+        
+        <table>
+          <thead><tr><th>Característica</th><th>Descrição</th></tr></thead>
+          <tbody>
+            <tr><td>Organismo / amostra</td><td></td></tr>
+            <tr><td>Tipo de dado</td><td>single-end</td></tr>
+            <tr><td>Plataforma</td><td>ONT - Oxford Nanopore technology</td></tr>
+            <tr><td>Arquivo de entrada</td><td>arquivo.fastq.gz</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="lesson-section" id="referencias">
+        <h1>Referências e materiais complementares</h1>
+        <h2>Referências</h2>
+        <ol>
+          <li>
+            <a href="https://doi.org/10.1038/s41576-019-0113-7" 
+            target = "_blank"
+            rel= "noopener noreferrer"
+            > Chiu, C.Y., Miller, S.A. Clinical metagenomics. Nat Rev Genet 20, 341–355 (2019).
+            </a> 
+          </li>
+          <li>
+            <a href="https://doi.org/10.1186/s13054-023-04365-1" 
+            target = "_blank"
+            rel= "noopener noreferrer"
+            > Neyton, L.P.A., Langelier, C.R. & Calfee, C.S. Metagenomic Sequencing in the ICU for Precision Diagnosis of Critical Infectious Illnesses. Crit Care 27, 90 (2023).
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1038/s41564-022-01089-w" 
+            target = "_blank"
+            rel= "noopener noreferrer"
+            > Ko, K.K.K., Chng, K.R. & Nagarajan, N. Metagenomics-enabled microbial surveillance. Nat Microbiol 7, 486–496 (2022).
+            </a> 
+          </li>
+        </ol>
+        <h2>Materiais complementares</h2>
+        <h3> Nextflow </h3>
+        <ol>
+          <li> 
+            <a href="https://training.nextflow.io/latest/hello_nextflow/" 
+            target = "_blank"
+            rel= "noopener noreferrer"
+            > Treinamento introdutório ao Nextflow
+            </a>
+          </li>
+          <li>
+            <a href="https://www.nextflow.io/" 
+            target = "_blank"
+            rel= "noopener noreferrer"
+            > Página oficial do Nextflow
+            </a>
+          </li>
+        </ol>
+          <h3> Ferramentas </h3>
+          <ol>
+          <li> 
+            <a href="https://doi.org/10.1093/bioinformatics/btad311" 
+            target = "_blank"
+            rel= "noopener noreferrer"
+            > NanoPlot - Controle de qualidade
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1093/bioinformatics/btad311" 
+            target = "_blank"
+            rel= "noopener noreferrer"
+            > Chopper - Filtragem e trimagem dos dados
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1186/s13059-019-1891-0" 
+            target = "_blank"
+            rel= "noopener noreferrer"
+            > Kraken2 - Classificação taxonômica
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1038/s41592-020-00971-x" 
+            target = "_blank"
+            rel= "noopener noreferrer"
+            > Flye - Montagem de genoma
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1038/s41592-026-03030-z" 
+            target = "_blank"
+            rel= "noopener noreferrer"
+            > DIAMOND - Anotação de proteínas
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1093/bioinformatics/bty191" 
+            target = "_blank"
+            rel= "noopener noreferrer"
+            > Minimap2 - Alinhamento de sequências
+            </a>
+          </li>
+           <li>
+            <a href="https://doi.org/10.1038/s41598-021-91456-0" 
+            target = "_blank"
+            rel= "noopener noreferrer"
+            > AMRFinder - Detecção de genes de resistência antimicrobianos
+            </a>
+          </li>
+           <li>
+            <a href="https://www.r-project.org/other-docs.html" 
+            target = "_blank"
+            rel= "noopener noreferrer"
+            > R - Construção de gráficos
+            </a>
+          </li>
+        </ol>
+      </section>
+
+      <footer class="footer">
+        Laboratório de Bioinformática Aplicada - UFRJ - CCS - ICB
+      </footer>
+      <footer class="footer">
+        Material produzido por Luccas Badiani · 2026 · Metagenômica
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const menuButton = document.getElementById("menuButton");
+    const sidebar = document.getElementById("sidebar");
+
+    menuButton.addEventListener("click", () => {
+      const isOpen = sidebar.classList.toggle("open");
+      menuButton.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    sidebar.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        sidebar.classList.remove("open");
+        menuButton.setAttribute("aria-expanded", "false");
+      });
+    });
+  </script>
+</body>
+</html>
